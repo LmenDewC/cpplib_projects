@@ -1,4 +1,5 @@
 #pragma once
+#include<dttool.hpp>
 inline int char_int(const char* input,int* output){
     int sign=1;
     int pos=0;
@@ -55,64 +56,101 @@ inline int bool_char(bool input,char* output){
 }
 
 inline int float_char(double input, char* output, int precision){
-    int pos = 0;
-
-    if(input < 0){
-        output[pos++] = '-';
-        input = -input;
+    int pos=0;
+    if(input<0){
+        output[pos++]='-';
+        input=-input;
     }
-
-    long long whole = (long long)input;
-    double decimal = input - whole;
-
-    // Convert whole part
-    if(whole == 0){
-        output[pos++] = '0';
+    long long whole=(long long)input;
+    double decimal=input-whole;
+    if(whole==0){
+        output[pos++]='0';
     }else{
         int start = pos;
-
-        while(whole != 0){
-            output[pos++] = '0' + (whole % 10);
-            whole /= 10;
+        while(whole!=0){
+            output[pos++]='0'+(whole % 10);
+            whole/=10;
         }
-
-        for(int i = start, j = pos - 1; i < j; i++, j--){
-            char temp = output[i];
-            output[i] = output[j];
-            output[j] = temp;
+        for(int i=start,j=pos-1;i<j;i++,j--){
+            char temp=output[i];
+            output[i]=output[j];
+            output[j]=temp;
         }
     }
-
-    if(precision > 0){
-        output[pos++] = '.';
-
-        for(int i = 0; i < precision; i++){
-            decimal *= 10;
-            int digit = (int)decimal;
-
-            output[pos++] = '0' + digit;
-            decimal -= digit;
+    if(precision>0){
+        output[pos++]='.';
+        for(int i=0;i<precision;i++){
+            decimal*=10;
+            int digit=(int)decimal;
+            output[pos++]='0'+digit;
+            decimal-=digit;
         }
     }
-
-    output[pos] = '\0';
+    output[pos]='\0';
     return pos;
 }
 
-inline bool char_cmpr(const char* csl1,const char* csl2){
-    bool result;
-    if(sizeof(csl1)==sizeof(csl2)){
-        for(int i=0;i<sizeof(csl1);i++){
-            if(csl1[i]==csl2[i]){
-                result=true;
-                continue;
-            }else{
-                result=false;
-                break;
-            }
-        }
+inline int char_bool(const char* input,bool* output){
+    int length;
+    if(cchar_cmpr(input,"true")||cchar_cmpr(input,"1")){
+        *output=true;
+        length=4;
+    }else
+    if(cchar_cmpr(input,"false")||cchar_cmpr(input,"0")){
+        *output=false;
+        length=5;
     }else{
-        result=false;
+        length=0;
     }
-    return result;
+    return length;
+}
+
+inline int char_float(const char* input,float* output){
+    static char wholeChar[128],decimalChar[128];
+    int pos=0;
+    int wcount=0;
+    int dcount=0;
+    int sign=1;
+    if(input[pos]=='-'){
+        sign=-1;
+        pos++;
+    }else if(input[pos]=='+'){
+        pos++;
+    }
+    while(input[pos]!='\0'&&input[pos]!='.'){
+        if(wcount>=127)return -1;
+        wholeChar[wcount++]=input[pos++];
+    }
+    wholeChar[wcount]='\0';
+    if(input[pos]=='.'){
+        pos++;
+        while(input[pos]!='\0'){
+            if(dcount>=127)return -1;
+            decimalChar[dcount++]=input[pos++];
+        }
+    }
+    decimalChar[dcount] = '\0';
+
+    if(wcount==0&&dcount==0) return -1;
+    int wholeInt=0;
+    int decimalInt=0;
+    if(wcount>0){
+        if(char_int(wholeChar,&wholeInt)<=0)
+            return -1;
+    }
+    int n=0;
+    if(dcount>0){
+        n=char_int(decimalChar,&decimalInt);
+        if(n!=dcount)return -1;
+    }
+    int x = 1;
+    for(int i=0;i<dcount;i++){
+        x*=10;
+    }
+    float result=(float)wholeInt;
+    if(dcount>0){
+        result+=(float)decimalInt/x;
+    }
+    *output=result*sign;
+    return pos;
 }

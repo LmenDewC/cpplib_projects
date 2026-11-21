@@ -22,5 +22,8 @@ namespace{
     typedef char32_t C32;
     typedef wchar_t CW32;
     typedef unsigned char UC8;
+
+    typedef const C;
+    typedef static S;
 };
 #endif

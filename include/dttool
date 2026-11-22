@@ -1,5 +1,5 @@
 #pragma once
-#include<cmath.hpp>
+#include<cmath>
 #include<type_traits>
 
 template<typename dtl>
@@ -14,7 +14,11 @@ inline int length(const dtl& input){
     if constexpr(std::is_arithmetic_v<U>){
         U tmp=input;
         if constexpr(std::is_same_v<U,bool>){
-            //
+            const char* text=input?"true":"false";
+            while(text[count]!='\0'){
+                count++;
+            }
+            return count;
         }else
         if constexpr(std::is_floating_point_v<U>){
             //

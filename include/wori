@@ -1,8 +1,7 @@
 #pragma once
 #include<type_traits>
-#include<adclib.hpp>
+#include<adclib>
 
-#define cc const char*
 #define newL ass_out("\n",1)
 #define clr ass_out("\033[2J\033[H",11)
 
@@ -46,7 +45,7 @@ inline C rin(){
     U resultB;
     static char buffer[4096];
     int count=0;
-    while(count<=sizeof(buffer)-1){
+    while(count<sizeof(buffer)-1){
         char c;
         long byte=ass_in(&c,1);
         if(byte<=0||c=='\n'){
@@ -65,7 +64,7 @@ inline C rin(){
             return resultB;
         }else
         if constexpr(std::is_same_v<U,char>){
-            return buffer[count];
+            return buffer[0];
         }else{
             char_int(buffer,&resultB);
             return resultB;

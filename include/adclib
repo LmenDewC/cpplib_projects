@@ -1,5 +1,5 @@
 #pragma once
-#include<dttool.hpp>
+#include<dttool>
 inline int char_int(const char* input,int* output){
     int sign=1;
     int pos=0;
@@ -154,3 +154,4 @@ inline int char_float(const char* input,float* output){
     *output=result*sign;
     return pos;
 }
+

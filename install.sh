@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ "$LEMON" != "set" ]; then
     export LEMON=set
-    dir=$(find /usr -type d -name "c++" -print -quit 2>/dev/null)
+    dir=$(find / -type d -name "c++" -print -quit 2>/dev/null)
     export INCDIR=$dir
     echo "Global Variables set, type ./install.sh again"
 elif [ "$LEMON" = "set" ]; then

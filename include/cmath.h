@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CMATH_H
+#define CMATH_H
 inline int expon(int x,int n){
     int result;
     asm volatile(
@@ -59,3 +60,4 @@ inline int gcf(int a,int b){
     );
     return result;
 }
+#endif

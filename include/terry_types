@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TERRY_THE_GOAT
+#define TERRY_THE_GOAT
 namespace{
     typedef short I16;
     typedef int I32;
@@ -22,3 +23,4 @@ namespace{
     typedef wchar_t CW32;
     typedef unsigned char UC8;
 };
+#endif

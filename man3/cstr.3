@@ -1,0 +1,280 @@
+.TH CSTR 3 "November 26, 2026" "cstr 1.0" "Library Functions"
+
+.SH NAME
+cstr - dynamically allocated C-style string class
+
+.SH SYNOPSIS
+.nf
+.B #include <cstr.h>
+
+.BI "cstr(" "const char *buf" ");"
+.B "cstr();"
+.BI "cstr(" "const cstr &other" ");"
+.BI "cstr(" "cstr &&other" ");"
+.BI "~cstr();"
+
+.BI "operator " "const char *" "() const;"
+.BI "unsigned int capacity() const;"
+.BI "char &operator[](" "unsigned int index" ");"
+
+.BI "cstr &operator=(" "const cstr &other" ");"
+.BI "cstr &operator=(" "cstr &&other" ");"
+
+.BI "cstr &operator+=(" "const char *buf" ");"
+.BI "cstr operator+(" "const char *buf" ") const;"
+
+.BI "bool operator==(" "const char *buf" ") const;"
+.BI "bool operator!=(" "const char *buf" ") const;"
+
+.BI "cstr operator+(" "const char *lhs" ", const cstr &rhs" ");"
+.fi
+
+.SH DESCRIPTION
+The
+.B cstr
+class provides dynamically allocated string storage
+and basic string manipulation operations.
+
+The class manages its own character buffer and provides
+an interface compatible with null-terminated C-style
+strings through an implicit conversion operator.
+
+The internal character buffer is dynamically allocated
+and managed by the class.
+
+Objects maintain their own string storage, allowing
+independent copies of string data.
+
+.SH CONSTRUCTORS
+.TP
+.B cstr()
+Constructs an empty string object.
+
+.TP
+.BI "cstr(" "const char *buf" ")"
+Constructs a string object using the supplied
+null-terminated character sequence.
+
+The constructor determines the length of the input
+and allocates sufficient storage for the character
+sequence and its terminating null character.
+
+.TP
+.BI "cstr(" "const cstr &other" ")"
+Copy constructor.
+
+Constructs a new object by copying the contents
+of another
+.B cstr
+object.
+
+The resulting object maintains independent storage
+from the source object.
+
+.TP
+.BI "cstr(" "cstr &&other" ")"
+Move constructor.
+
+Transfers the dynamically allocated character buffer
+from the source object to the newly constructed object.
+
+The source object is left in an empty, valid state.
+
+.SH DESTRUCTOR
+.TP
+.B ~cstr()
+Destroys the object and releases its dynamically
+allocated character buffer.
+
+.SH MEMBER FUNCTIONS
+.TP
+.B "unsigned int capacity() const"
+Returns the current string length as reported by
+the object's internal size value.
+
+.TP
+.BI "char &operator[](" "unsigned int index" ")"
+Provides access to the character at the specified
+index.
+
+The index is zero-based.
+
+No bounds-checking behavior is guaranteed.
+
+.TP
+.B "operator const char*() const"
+Converts the object into a pointer to its
+null-terminated character buffer.
+
+This conversion allows a
+.B cstr
+object to be passed to functions expecting
+a
+.B const char *
+argument.
+
+.SH ASSIGNMENT OPERATORS
+.TP
+.BI "cstr &operator=(" "const cstr &other" ")"
+Copy assignment operator.
+
+Copies the contents of another object into
+the current object while maintaining independent
+character storage.
+
+.TP
+.BI "cstr &operator=(" "cstr &&other" ")"
+Move assignment operator.
+
+Transfers ownership of the source object's
+character buffer to the destination object.
+
+The source object is left in an empty, valid state.
+
+.SH STRING OPERATORS
+.TP
+.BI "cstr &operator+=(" "const char *buf" ")"
+Appends the supplied null-terminated character
+sequence to the current string.
+
+The existing string contents are preserved.
+
+.TP
+.BI "cstr operator+(" "const char *buf" ") const"
+Creates and returns a new string containing
+the current object's contents followed by
+the supplied character sequence.
+
+The original object remains unmodified.
+
+.TP
+.BI "bool operator==(" "const char *buf" ") const"
+Compares the current string with the supplied
+null-terminated character sequence.
+
+.TP
+.BI "bool operator!=(" "const char *buf" ") const"
+Checks whether the current string differs
+from the supplied character sequence.
+
+.SH NON-MEMBER OPERATORS
+.TP
+.BI "cstr operator+(" "const char *lhs" ", const cstr &rhs" ")"
+Concatenates a C-style string on the left-hand
+side with a
+.B cstr
+object on the right-hand side.
+
+Returns a new
+.B cstr
+object containing both sequences.
+
+.SH MEMORY MANAGEMENT
+The
+.B cstr
+class manages dynamically allocated memory.
+
+Each independently constructed or copied object
+maintains its own character buffer.
+
+Move operations transfer ownership of the allocated
+buffer instead of copying the entire character sequence.
+
+The destructor releases the memory owned by the object.
+
+.SH RETURN VALUE
+Member functions returning a reference to
+.B cstr
+return the current object.
+
+The concatenation operator
+.B operator+
+returns a new
+.B cstr
+object.
+
+The comparison operators return a boolean value.
+
+The
+.B capacity()
+function returns an unsigned integer representing
+the current string length.
+
+.SH EXAMPLES
+The following example demonstrates basic construction,
+concatenation, and output.
+
+.nf
+#include <cstr.h>
+
+int main()
+{
+cstr first("Hello");
+cstr second(" World");
+
+cstr result = first + second;
+
+wrout(result);
+newL;
+
+return 0;
+
+}
+.fi
+
+The following example demonstrates appending.
+
+.nf
+#include <cstr.h>
+
+int main()
+{
+cstr text("Hello");
+
+text += " World";
+
+wrout(text);
+newL;
+
+return 0;
+
+}
+.fi
+
+.SH COMPATIBILITY
+The
+.B cstr
+class is implemented in C++ and requires
+a C++ compiler.
+
+The implicit conversion to
+.B const char *
+provides interoperability with interfaces
+that accept null-terminated character strings.
+
+The class itself is not a C-compatible interface.
+
+.SH LIMITATIONS
+The
+.B cstr
+class does not provide a guaranteed bounds-checked
+indexing operation.
+
+The lifetime of a character pointer obtained
+through the conversion operator is tied to
+the lifetime and modification of its owning object.
+
+.SH SEE ALSO
+.BR strlen (3),
+.BR malloc (3),
+.BR free (3),
+.BR operator (7)
+
+.SH AUTHOR
+Kai (penname)
+
+.SH HISTORY
+The
+.B cstr
+class was developed as part of a collection
+of independently implemented C and C++ utilities.

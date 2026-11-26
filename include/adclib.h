@@ -1,5 +1,6 @@
-#pragma once
-#include<dttool>
+#ifndef ADCLIB_H
+#define ADCLIB_H
+#include<dttool.h>
 inline int char_int(const char* input,int* output){
     int sign=1;
     int pos=0;
@@ -154,4 +155,4 @@ inline int char_float(const char* input,float* output){
     *output=result*sign;
     return pos;
 }
-
+#endif

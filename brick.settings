@@ -1,0 +1,4 @@
+{
+  "run": "cd \"/home/cpplib_projects\" && quarks run",
+  "build": "cd \"/home/cpplib_projects\" && quarks build"
+}

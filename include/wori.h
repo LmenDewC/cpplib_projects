@@ -1,6 +1,7 @@
-#pragma once
+#ifndef WORI_H
+#define WORI_H
 #include<type_traits>
-#include<adclib>
+#include<adclib.h>
 
 #define newL ass_out("\n",1)
 #define clr ass_out("\033[2J\033[H",11)
@@ -11,6 +12,8 @@ inline void ass_out(const char* buf,unsigned long len);
 template<typename T>
 inline void wrout(const T& input){
     using U=std::decay_t<T>;
+    static_assert(!std::is_same_v<U,std::nullptr_t>,
+    "\033[31mTrying to output a nullptr?...Nice try bro \033[32m-kai(the author)\033[0m");
     if constexpr(std::is_convertible_v<T,const char*>){
         const char* text=input;
         long length=0;
@@ -104,3 +107,4 @@ inline void ass_out(const char* buf,unsigned long len){
       :"x0","x1","x2","x8","memory"
     );
 }
+#endif

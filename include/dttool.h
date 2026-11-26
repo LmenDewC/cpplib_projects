@@ -1,5 +1,6 @@
-#pragma once
-#include<cmath>
+#ifndef DTTOOL_H
+#define DTTOOL_H
+#include<cmath.h>
 #include<type_traits>
 
 template<typename dtl>
@@ -54,3 +55,4 @@ inline bool cchar_cmpr(const char* csl1,const char* csl2){
     }
     return result;
 }
+#endif

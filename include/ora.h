@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ORA_H
+#define ORA_H
 #define CLOCK_MONOTONIC 1
 #define CLOCK_REALTIME 0
 #define SEC true
@@ -40,3 +41,4 @@ inline long long elapse(bool time,int persec){
     }
     return res;
 }
+#endif

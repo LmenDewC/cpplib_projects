@@ -1,30 +1,30 @@
 #ifndef DTTOOL_H
 #define DTTOOL_H
 #include<cmath.h>
-#include<type_traits>
+#include<type_shit>
 
 template<typename dtl>
 inline int length(const dtl& input){
-    using U=std::decay_t<dtl>;
+    using U=ts::decay_t<dtl>;
     int count=0;
-    if constexpr(std::is_convertible_v<dtl,const char*>){
+    if constexpr(ts::is_conv<dtl,const char*>{}){
         while(input[count]!='\0'){
             count++;
         }
     }else
-    if constexpr(std::is_arithmetic_v<U>){
+    if constexpr(ts::is_arithmetic<U>{}){
         U tmp=input;
-        if constexpr(std::is_same_v<U,bool>){
+        if constexpr(ts::is_same<U,bool>{}){
             const char* text=input?"true":"false";
             while(text[count]!='\0'){
                 count++;
             }
             return count;
         }else
-        if constexpr(std::is_floating_point_v<U>){
+        if constexpr(ts::is_floating_pnt<U>{}){
             //
         }else
-        if constexpr(std::is_same_v<U,char>){
+        if constexpr(ts::is_same<U,char>{}){
             count++;
         }else{
             if(tmp==0){

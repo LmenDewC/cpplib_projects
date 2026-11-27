@@ -1,6 +1,6 @@
 #ifndef WORI_H
 #define WORI_H
-#include<type_traits>
+#include<type_shit>
 #include<adclib.h>
 
 #define newL ass_out("\n",1)
@@ -11,10 +11,10 @@ inline void ass_out(const char* buf,unsigned long len);
 
 template<typename T>
 inline void wrout(const T& input){
-    using U=std::decay_t<T>;
-    static_assert(!std::is_same_v<U,std::nullptr_t>,
+    using U=ts::decay_t<T>;
+    static_assert(!ts::is_nullptr<U>{},
     "\033[31mTrying to output a nullptr?...Nice try bro \033[32m-kai(the author)\033[0m");
-    if constexpr(std::is_convertible_v<T,const char*>){
+    if constexpr(ts::is_conv<T,const char*>{}){
         const char* text=input;
         long length=0;
         while(text[length]!='\0'){
@@ -22,16 +22,16 @@ inline void wrout(const T& input){
         }
         ass_out(text,length);
     }else
-    if constexpr(std::is_arithmetic_v<U>){
+    if constexpr(ts::is_arithmetic<U>{}){
         long length;
         char buffer[128];
-        if constexpr(std::is_same_v<U,bool>){
+        if constexpr(ts::is_same<U,bool>{}){
             length=bool_char(input,buffer);
         }else
-        if constexpr(std::is_floating_point_v<U>){
+        if constexpr(ts::is_floating_pnt<U>{}){
             length=float_char(input,buffer,5);
         }else
-        if constexpr(std::is_same_v<U,char>){
+        if constexpr(ts::is_same<U,char>{}){
             length=1;
             buffer[0]=input;
         }else{
@@ -43,7 +43,7 @@ inline void wrout(const T& input){
 
 template<typename C>
 inline C rin(){
-    using U=std::decay_t<C>;
+    using U=ts::decay_t<C>;
     C resultA;
     U resultB;
     static char buffer[4096];
@@ -57,23 +57,23 @@ inline C rin(){
         }
         buffer[count++]=c;
     }
-    if constexpr(std::is_arithmetic_v<U>){
-        if constexpr(std::is_same_v<U,bool>){
+    if constexpr(ts::is_arithmetic<U>{}){
+        if constexpr(ts::is_same<U,bool>{}){
             char_bool(buffer,&resultB);
             return resultB;
         }else
-        if constexpr(std::is_floating_point_v<U>){
+        if constexpr(ts::is_floating_pnt<U>{}){
             char_float(buffer,&resultB);
             return resultB;
         }else
-        if constexpr(std::is_same_v<U,char>){
+        if constexpr(ts::is_same<U,char>{}){
             return buffer[0];
         }else{
             char_int(buffer,&resultB);
             return resultB;
         }
     }else
-    if constexpr(std::is_convertible_v<C,const char*>){
+    if constexpr(ts::is_conv<C,const char*>{}){
         const char* text=buffer;
         return text;
     }

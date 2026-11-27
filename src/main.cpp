@@ -1,5 +1,7 @@
 #include<wori.h>
-#include<cstr.h>
+#include<type_shit>
+using namespace ts;
 int main(){
-    
+    wrout(nullptr);newL;
+    return 0;
 }

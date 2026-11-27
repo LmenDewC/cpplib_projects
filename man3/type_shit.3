@@ -1,0 +1,301 @@
+.TH TYPE_SHIT 3 "November 2026" "type_shit" "Library Functions Manual"
+.SH NAME
+type_shit - compile-time C++ type inspection and transformation library
+.SH SYNOPSIS
+.nf
+.B #include "type_shit.h"
+.PP
+.B namespace ts {
+.PP
+.BI "    is_same<" T ", " U ">"
+.br
+.BI "    is_const<" T ">"
+.br
+.BI "    is_volatile<" T ">"
+.br
+.BI "    is_void<" T ">"
+.br
+.BI "    is_integral<" T ">"
+.br
+.BI "    is_floating_pnt<" T ">"
+.br
+.BI "    is_arithmetic<" T ">"
+.br
+.BI "    is_ptr<" T ">"
+.br
+.BI "    is_ref<" T ">"
+.br
+.BI "    is_array<" T ">"
+.br
+.BI "    is_func<" T ">"
+.br
+.BI "    is_conv<" T ", " U ">"
+.PP
+.BI "    declval<" T ">()"
+.PP
+.BI "    rm_ref<" T ">::type"
+.br
+.BI "    rm_ref_t<" T ">"
+.br
+.BI "    rm_const<" T ">::type"
+.br
+.BI "    rm_const_t<" T ">"
+.br
+.BI "    rm_volatile<" T ">::type"
+.br
+.BI "    rm_volatile_t<" T ">"
+.br
+.BI "    decay<" T ">::type"
+.br
+.BI "    decay_t<" T ">"
+.PP
+.B }
+.fi
+.SH DESCRIPTION
+.B type_shit
+is a custom C++ type traits library providing compile-time type inspection, comparison, conversion checking, and type transformation.
+.PP
+The library operates within the
+.B ts
+namespace and uses C++ templates, partial specialization, constexpr conversion operators, decltype, and compile-time expression evaluation.
+.PP
+The library is designed to provide type-related functionality without depending on the standard C++ header
+.BR <type_traits> .
+.SH TYPE INSPECTION
+.SS is_same
+.nf
+template<typename T, typename U>
+struct is_same;
+.fi
+.PP
+Determines whether two types are exactly identical.
+Returns true when both types match, including their cv qualifiers.
+.SS is_const
+.nf
+template<typename T>
+struct is_const;
+.fi
+.PP
+Determines whether a type has the const qualifier.
+.SS is_volatile
+.nf
+template<typename T>
+struct is_volatile;
+.fi
+.PP
+Determines whether a type has the volatile qualifier.
+.SS is_void
+.nf
+template<typename T>
+struct is_void;
+.fi
+.PP
+Determines whether a type matches the void specializations.
+.IP (bu 2
+void
+.IP (bu 2
+const void
+.IP (bu 2
+volatile void
+.IP (bu 2
+const volatile void
+.PP
+.B NOTE:
+The current cv-qualified specializations match other qualified types as well. For example,
+.B is_void<const int>
+currently evaluates to true.
+.SS is_integral
+.nf
+template<typename T>
+struct is_integral;
+.fi
+.PP
+Determines whether a type matches one of the integral types currently implemented:
+.IP (bu 2
+char
+.IP (bu 2
+short
+.IP (bu 2
+int
+.IP (bu 2
+long
+.IP (bu 2
+long long
+.IP (bu 2
+unsigned int
+.IP (bu 2
+bool
+.PP
+Other integral types are not yet covered.
+.SS is_floating_pnt
+.nf
+template<typename T>
+struct is_floating_pnt;
+.fi
+.PP
+Determines whether a type is one of the following floating-point types:
+.IP (bu 2
+float
+.IP (bu 2
+double
+.IP (bu 2
+long double
+.SS is_arithmetic
+.nf
+template<typename T>
+struct is_arithmetic;
+.fi
+.PP
+Determines whether a type is recognized as either integral or floating-point.
+Uses
+.B is_integral
+and
+.B is_floating_pnt
+internally.
+.SS is_ptr
+.nf
+template<typename T>
+struct is_ptr;
+.fi
+.PP
+Determines whether a type is a pointer.
+Supports pointer-to-pointer types.
+.SS is_ref
+.nf
+template<typename T>
+struct is_ref;
+.fi
+.PP
+Determines whether a type is an lvalue reference or rvalue reference.
+.SS is_array
+.nf
+template<typename T>
+struct is_array;
+.fi
+.PP
+Determines whether a type is an array.
+Supports bounded and unbounded arrays.
+.SS is_func
+.nf
+template<typename T>
+struct is_func;
+.fi
+.PP
+Determines whether a type is a function type.
+Function pointers are not classified as function types.
+.SS is_conv
+.nf
+template<typename T, typename U>
+struct is_conv;
+.fi
+.PP
+Checks whether an expression of type
+.I T
+can be implicitly converted to type
+.IR U .
+.PP
+The implementation uses
+.B declval
+and
+.B decltype
+alongside overload resolution and SFINAE.
+.PP
+The current implementation uses a C++20 lambda expression and does not cover every edge case handled by
+.BR std::is_convertible .
+.SH TYPE UTILITIES
+.SS declval
+.nf
+template<typename T>
+T&& declval();
+.fi
+.PP
+Provides a hypothetical expression of type
+.B T&&
+for use in unevaluated contexts.
+.PP
+It allows compile-time expressions to inspect types without constructing objects.
+.PP
+.B WARNING:
+The function is declared but not defined. It must not be called in evaluated runtime code. It is intended for use in unevaluated contexts such as
+.BR decltype .
+.SS rm_ref
+.nf
+template<typename T>
+struct rm_ref;
+
+template<typename T>
+using rm_ref_t = typename rm_ref<T>::type;
+.fi
+.PP
+Removes an lvalue or rvalue reference from a type.
+.SS rm_const
+.nf
+template<typename T>
+struct rm_const;
+
+template<typename T>
+using rm_const_t = typename rm_const<T>::type;
+.fi
+.PP
+Removes the const qualifier from a type.
+.SS rm_volatile
+.nf
+template<typename T>
+struct rm_volatile;
+
+template<typename T>
+using rm_volatile_t = typename rm_volatile<T>::type;
+.fi
+.PP
+Removes the volatile qualifier from a type.
+.SS decay
+.nf
+template<typename T>
+struct decay;
+
+template<typename T>
+using decay_t = typename decay<T>::type;
+.fi
+.PP
+Transforms a type by removing references, converting supported array types into pointers, converting supported function types into function pointers, and removing top-level cv qualifiers from other types.
+.PP
+The current implementation handles bounded arrays, unbounded arrays, and ordinary function types. Additional function-type variations, including noexcept function types, are not yet supported.
+.SH RETURN AND VALUE CONVENTIONS
+Type inspection traits provide an implicit
+.B constexpr
+conversion operator to
+.BR bool .
+.PP
+This allows trait objects to be used directly in compile-time conditions.
+.PP
+Example:
+.nf
+static_assert(ts::is_same<int, int>{});
+static_assert(ts::is_ptr<int*>{});
+static_assert(!ts::is_array<int>{});
+.fi
+.PP
+Type transformation traits expose their resulting type through the nested member
+.BR type .
+.PP
+The corresponding alias templates provide direct access without explicitly writing
+.BR ::type .
+.SH IMPLEMENTATION NOTES
+The library currently implements its own type inspection and transformation mechanisms using templates and compile-time expressions.
+.PP
+The implementation is a work in progress. Trait coverage and compatibility with the C++ standard library are not guaranteed.
+.SH FILES
+.I type_shit.h
+.RS
+Main header containing all current type traits and utilities.
+.RE
+.SH DEPENDENCIES
+No C++ standard library headers are required by the current implementation.
+.SH AUTHOR
+-Kai (penname)
+.SH SEE ALSO
+.BR cppreference (3),
+.BR g++ (1),
+.BR c++ (1)
+.SH HISTORY
+The library is developed incrementally, with individual traits implemented and tested before being integrated into the main header.

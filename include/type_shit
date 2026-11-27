@@ -1,0 +1,292 @@
+#ifndef TYPESHIT_H
+#define TYPESHIT_H
+namespace ts{
+    //is_same
+    template<typename T,typename U>
+    struct is_same{
+        constexpr operator bool(){
+            return false;
+        }
+    };
+    template<typename T>
+    struct is_same<T,T>{
+        constexpr operator bool(){
+            return true;
+        }
+    };
+    
+    //is_const
+    template<typename T>
+    struct is_const{
+        constexpr operator bool() const{
+            return false;
+        }
+    };
+    template<typename T>
+    struct is_const<const T>{
+        constexpr operator bool() const{
+            return true;
+        }
+    };
+    
+    //is_volatile
+    template<typename T>
+    struct is_volatile{
+        constexpr operator bool(){
+            return false;
+        }
+    };
+    template<typename T>
+    struct is_volatile<volatile T>{
+        constexpr operator bool(){
+            return true;
+        }
+    };
+    
+    //is_void
+    template<typename T>
+    struct is_void{
+        constexpr operator bool(){
+            return false;
+        };
+    };
+    template<>
+    struct is_void<void>{
+        constexpr operator bool(){
+            return true;
+        }
+    };
+    template<typename T>
+    struct is_void<const T>{
+        constexpr operator bool(){
+            return true;
+        }
+    };
+    template<typename T>
+    struct is_void<volatile T>{
+        constexpr operator bool(){
+            return true;
+        }
+    };
+    template<typename T>
+    struct is_void<const volatile T>{
+        constexpr operator bool(){
+            return true;
+        }
+    };
+    
+    //is_integral
+    template<typename T>
+    struct is_integral{
+        constexpr operator bool(){
+            if constexpr(
+            ts::is_same<T,char>{}||
+            ts::is_same<T,short>{}||
+            ts::is_same<T,int>{}||
+            ts::is_same<T,long>{}||
+            ts::is_same<T,long long>{}||
+            ts::is_same<T,unsigned int>{}||
+            ts::is_same<T,bool>{})return true;
+            return false;
+        }
+    };
+    
+    //is_floating_pnt
+    template<typename T>
+    struct is_floating_pnt{
+        constexpr operator bool(){
+            if constexpr(
+            ts::is_same<T,float>{}||
+            ts::is_same<T,double>{}||
+            ts::is_same<T,long double>{})return true;
+            return false;
+        }
+    };
+    
+    //is_arithmetic
+    template<typename T>
+    struct is_arithmetic{
+        constexpr operator bool(){
+            if constexpr(ts::is_integral<T>{}||ts::is_floating_pnt<T>{})return true;
+            return false;
+        }
+    };
+    
+    //is_ptr
+    template<typename T>
+    struct is_ptr{
+        constexpr operator bool(){
+            return false;
+        }
+    };
+    template<typename T>
+    struct is_ptr<T*>{
+        constexpr operator bool(){
+            return true;
+        }
+    };
+    
+    //is_ref
+    template<typename T>
+    struct is_ref{
+        constexpr operator bool(){
+            return false;
+        }
+    };
+    template<typename T>
+    struct is_ref<T&>{
+        constexpr operator bool(){
+            return true;
+        }
+    };
+    template<typename T>
+    struct is_ref<T&&>{
+        constexpr operator bool(){
+            return true;
+        }
+    };
+    
+    //is_array
+    template<typename T>
+    struct is_array{
+        constexpr operator bool(){
+            return false;
+        }
+    };
+    template<typename T,unsigned long N>
+    struct is_array<T[N]>{
+        constexpr operator bool(){
+            return true;
+        }
+    };
+    template<typename T>
+    struct is_array<T[]>{
+        constexpr operator bool(){
+            return true;
+        }
+    };
+    
+    //is_func
+    template<typename T>
+    struct is_func{
+        constexpr operator bool(){
+            return false;
+        }
+    };
+    template<typename T>
+    struct is_func<T()>{
+        constexpr operator bool(){
+            return true;
+        }
+    };
+    template<typename T,typename... P>
+    struct is_func<T(P...)>{
+        constexpr operator bool(){
+            return true;
+        }
+    };
+    
+    //is_nullptr
+    template<typename T>
+    struct is_nullptr{
+        constexpr operator bool(){
+            if constexpr(ts::is_same<T,decltype(nullptr)>{})return true;
+            return false;
+        }
+    };
+    
+    //declval
+    template<typename T>
+    T&& declval();
+    
+    // is_conv
+    template<typename U>
+    void conv_sink(U);
+    template<typename T,typename U>
+    auto conv_test(int) -> decltype(
+        conv_sink<U>(declval<T>()),
+        char{}
+    );
+    template<typename,typename>
+    auto conv_test(...) -> long;
+    template<typename T,typename U>
+    struct is_conv{
+        constexpr operator bool(){
+            return sizeof(conv_test<T,U>(0))==sizeof(char);
+        }
+    };
+    
+    // remove_reference
+    template<typename T>
+    struct rm_ref{
+        using type=T;
+    };
+
+    template<typename T>
+    struct rm_ref<T&>{
+        using type=T;
+    };
+
+    template<typename T>
+    struct rm_ref<T&&>{
+        using type=T;
+    };
+    template<typename T>
+    using rm_ref_t=typename rm_ref<T>::type;
+    
+    //remove_constant
+    template<typename T>
+    struct rm_volatile{
+        using type=T;
+    };
+
+    template<typename T>
+    struct rm_volatile<volatile T>{
+        using type=T;
+    };
+    template<typename T>
+    using rm_volatile_t=typename rm_volatile<T>::type;
+
+    //remove_volatile
+    template<typename T>
+    struct rm_const{
+        using type=T;
+    };
+
+    template<typename T>
+    struct rm_const<const T>{
+        using type=T;
+    };
+    template<typename T>
+    using rm_const_t=typename rm_const<T>::type;
+    
+    // decay_impl
+    template<typename T>
+    struct decay_impl{
+        using type=rm_const_t<rm_volatile_t<T>>;
+    };
+    template<typename T,unsigned long N>
+    struct decay_impl<T[N]>{
+        using type=T*;
+    };
+    template<typename T>
+    struct decay_impl<T[]>{
+        using type=T*;
+    };
+    template<typename R,typename... Args>
+    struct decay_impl<R(Args...)>{
+        using type=R(*)(Args...);
+    };
+    // decay
+    template<typename T>
+    struct decay{
+    private:
+        using U=rm_ref_t<T>;
+
+    public:
+        using type=typename decay_impl<U>::type;
+    };
+    template<typename T>
+    using decay_t=typename decay<T>::type;
+}
+#endif
